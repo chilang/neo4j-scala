@@ -31,10 +31,7 @@ trait Neo4jWrapper extends GraphDatabaseServiceProvider with Neo4jWrapperImplici
     try {
       val ret = operation(ds)
       tx.success
-      return ret
-    } catch {
-      case e:Throwable => println(e)
-      throw e
+      ret
     } finally {
       tx.finish
     }
