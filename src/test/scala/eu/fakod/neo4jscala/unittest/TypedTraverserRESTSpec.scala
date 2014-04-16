@@ -26,7 +26,6 @@ class TypedTraverserRESTSpec extends SpecificationWithJUnit with Neo4jWrapper wi
     implicit neo =>
       val nodeMap = for ((name, prof) <- nodes) yield (name, createNode(Test_Matrix(name, prof)))
 
-//      getReferenceNode --> "ROOT" --> nodeMap("Neo")
 
       nodeMap("Neo") --> "KNOWS" --> nodeMap("Trinity")
       nodeMap("Neo") --> "KNOWS" --> nodeMap("Morpheus") --> "KNOWS" --> nodeMap("Trinity")

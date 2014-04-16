@@ -13,7 +13,7 @@ import sys.ShutdownHookThread
 
 class IndexTestSpec extends SpecificationWithJUnit with Neo4jWrapper with EmbeddedGraphDatabaseServiceProvider with Neo4jIndexProvider {
 
-  def neo4jStoreDir = "/tmp/temp-neo-index-test"
+  def neo4jStoreDir = "./target/temp-neo-index-test"
 
   override def NodeIndexConfig = ("MyTestIndex", Map("provider" -> "lucene", "type" -> "fulltext")) :: Nil
 
@@ -25,11 +25,8 @@ class IndexTestSpec extends SpecificationWithJUnit with Neo4jWrapper with Embedd
 
     "use the fulltext search index" in {
 
-      val nodeIndex = getNodeIndex("MyTestIndex").get
-
-      withTx {
-        implicit db =>
-
+      withTx { implicit db =>
+        val nodeIndex = getNodeIndex("MyTestIndex").get
         val theMatrix = createNode
         val theMatrixReloaded = createNode
         theMatrixReloaded.setProperty("name", "theMatrixReloaded")
@@ -45,11 +42,9 @@ class IndexTestSpec extends SpecificationWithJUnit with Neo4jWrapper with Embedd
 
     "remove items from index" in {
 
-      val nodeIndex = getNodeIndex("MyTestIndex").get
+      withTx { implicit db =>
 
-      withTx {
-        implicit db =>
-
+        val nodeIndex = getNodeIndex("MyTestIndex").get
         val found = nodeIndex.query("title", "reloAdEd")
         val size = found.size
         for (f <- found.iterator)

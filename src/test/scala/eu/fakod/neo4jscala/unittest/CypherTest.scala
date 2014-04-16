@@ -8,7 +8,7 @@ import eu.fakod.neo4jscala.Test_Matrix
 
 class CypherSpec extends SpecificationWithJUnit with Neo4jWrapper with SingletonEmbeddedGraphDatabaseServiceProvider with Cypher {
 
-  def neo4jStoreDir = "/tmp/temp-neo-CypherTest"
+  def neo4jStoreDir = "./target/temp-neo-CypherTest"
 
   ShutdownHookThread {
     shutdown(ds)
@@ -26,8 +26,6 @@ class CypherSpec extends SpecificationWithJUnit with Neo4jWrapper with Singleton
     implicit neo =>
       val nodeMap = for ((name, prof) <- nodes) yield (name, createNode(Test_Matrix(name, prof)))
 
-//      getReferenceNode --> "ROOT" --> nodeMap("Neo")
-
       nodeMap("Neo") --> "KNOWS" --> nodeMap("Trinity")
       nodeMap("Neo") --> "KNOWS" --> nodeMap("Morpheus") --> "KNOWS" --> nodeMap("Trinity")
       nodeMap("Morpheus") --> "KNOWS" --> nodeMap("Cypher") --> "KNOWS" --> nodeMap("Agent Smith")
@@ -40,24 +38,26 @@ class CypherSpec extends SpecificationWithJUnit with Neo4jWrapper with Singleton
   "Cypher Trait" should {
 
     "be able to execute query" in {
+      withTx { ds =>
+        val query = "start n=node(" + nodeMap("Neo").getId + ") return n, n.name"
 
-      val query = "start n=node(" + nodeMap("Neo").getId + ") return n, n.name"
+        val typedResult = query.execute.asCC[Test_Matrix]("n")
 
-      val typedResult = query.execute.asCC[Test_Matrix]("n")
+        typedResult.next.name must be_==("Neo")
 
-      typedResult.next.name must be_==("Neo")
-
-      success
+        success
+      }
     }
 
     "be able to execute (*) query" in {
 
-      val query = """start n=node(*) where n.name?="Neo" return n"""
+      val query = """start n=node(*) where n.name ="Neo" return n"""
+      withTx { ds =>
+        val typedResult = query.execute.asCC[Test_Matrix]("n")
+        typedResult.toList.size must be_>(0)
 
-      val typedResult = query.execute.asCC[Test_Matrix]("n")
-      typedResult.toList.size must be_>(0)
-
-      success
+        success
+      }
     }
 
   }
