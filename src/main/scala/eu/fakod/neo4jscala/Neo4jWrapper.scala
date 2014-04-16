@@ -69,20 +69,6 @@ trait Neo4jWrapper extends GraphDatabaseServiceProvider with Neo4jWrapperImplici
     ds.gds.getRelationshipById(id)
 
   /**
-   * Returns the reference node, which is a "starting point" in the node
-   * space. Usually, a client attaches relationships to this node that leads
-   * into various parts of the node space. For more information about common
-   * node space organizational patterns, see the design guide at <a
-   * href="http://wiki.neo4j.org/content/Design_Guide"
-   * >wiki.neo4j.org/content/Design_Guide</a>.
-   *
-   * @return the reference node
-   * @throws NotFoundException if unable to get the reference node
-   */
-  def getReferenceNode(implicit ds: DatabaseService): Node =
-    ds.gds.getReferenceNode
-
-  /**
    * Returns all nodes in the node space.
    *
    * @return all nodes in the node space

@@ -1,14 +1,16 @@
 package eu.fakod.neo4jscala
 
 import scala.language.implicitConversions
-import org.neo4j.kernel.impl.batchinsert.BatchInserter
 import java.util.{Map => juMap}
 import org.neo4j.graphdb.index._
 import org.neo4j.graphdb._
-import org.neo4j.index.impl.lucene.{AbstractIndexHits, LuceneBatchInserterIndexProvider}
+import org.neo4j.index.impl.lucene.AbstractIndexHits
 import collection.JavaConversions._
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
 import collection.mutable.{SynchronizedMap, ConcurrentMap, HashMap}
+import org.neo4j.unsafe.batchinsert.{BatchInserterIndex, BatchInserterIndexProvider, BatchInserter}
+import org.neo4j.index.lucene.unsafe.batchinsert.LuceneBatchInserterIndexProvider
+import org.neo4j.graphdb.factory.GraphDatabaseFactory
 
 /**
  * provides Index access trait
@@ -111,7 +113,7 @@ private[neo4jscala] trait IndexCacheHelper {
  */
 class BatchIndex(bii: BatchInserterIndex, bi: BatchInserter) extends Index[Node] with IndexCacheHelper {
 
-  private val gds = bi.getGraphDbService
+  private val gds = new GraphDatabaseFactory().newEmbeddedDatabase(bi.getStoreDir)
 
   /**
    * implicitly converts IndexHits[Long] to IndexHits[BatchNode]
@@ -177,7 +179,7 @@ class BatchIndex(bii: BatchInserterIndex, bi: BatchInserter) extends Index[Node]
  */
 class BatchRelationshipIndex(bii: BatchInserterIndex, bi: BatchInserter) extends RelationshipIndex with IndexCacheHelper {
 
-  private val gds = bi.getGraphDbService
+  private val gds = new GraphDatabaseFactory().newEmbeddedDatabase(bi.getStoreDir)
 
   /**
    * implicitly converts IndexHits[Long] to IndexHits[BatchRelationship]
