@@ -1,7 +1,7 @@
 package eu.fakod.examples
 
 import sys.ShutdownHookThread
-import org.neo4j.scala.{TypedTraverser, SingletonEmbeddedGraphDatabaseServiceProvider, Neo4jWrapper}
+import eu.fakod.neo4jscala.{TypedTraverser, SingletonEmbeddedGraphDatabaseServiceProvider, Neo4jWrapper}
 
 
 trait MatrixBase {
@@ -23,7 +23,7 @@ object TheMatrix extends App with Neo4jWrapper with SingletonEmbeddedGraphDataba
     shutdown(ds)
   }
 
-  def neo4jStoreDir = "/tmp/temp-neo-TheMatrix"
+  def neo4jStoreDir = "./target/temp-neo-TheMatrix"
 
   /**
    * defining nodes
@@ -42,8 +42,6 @@ object TheMatrix extends App with Neo4jWrapper with SingletonEmbeddedGraphDataba
   val nodeMap = withTx {
     implicit neo =>
       val nodeMap = for ((name, prof) <- nodes) yield (name, createNode(Matrix(name, prof)))
-
-      getReferenceNode --> "ROOT" --> nodeMap("Neo")
 
       nodeMap("Neo") --> "KNOWS" --> nodeMap("Trinity")
       nodeMap("Neo") --> "KNOWS" --> nodeMap("Morpheus") --> "KNOWS" --> nodeMap("Trinity")

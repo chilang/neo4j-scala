@@ -4,7 +4,6 @@ import util.CaseClassDeserializer
 import collection.JavaConversions._
 import CaseClassDeserializer._
 import org.neo4j.graphdb._
-import index.IndexManager
 
 /**
  * Extend your class with this trait to get really neat new notation for creating
